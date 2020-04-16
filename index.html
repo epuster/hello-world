@@ -6,12 +6,18 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="localForage/dist/localforage.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <head>
       <meta charset="utf8" />
       <title>LocalForage Example Pen</title>
     </head>
     <body>
+      <h1>PDF Generator</h1>
+      <div class="form-group">
+        <input type="button" value="Generate PDF" onclick="makePDF"/>
+      </div>
+
       <h1>LocalForage Example Pen</h1>
       <ul id="htmlConsole" class="logList"></ul>
 
@@ -21,7 +27,9 @@
         <input type="button" value="Load Contents" onclick=""/>
       </div>
 
-      <script>localforage.setItem('key', 300).then(function () {
+      <script>
+      
+      localforage.setItem('key', 300).then(function () {
         return localforage.getItem('key');
       }).then(function (value) {
         // we got our value
@@ -32,6 +40,18 @@
         // we got an error
         console.log('Error')
       });
+
+      function makePDF() {
+        var doc = new jsPDF({
+          orientation: 'portrait',
+          unit: 'in',
+          format: [4,2]
+        })
+
+        doc.text($('testArea').value,1,1);
+        doc.save('two-by-four.pdf');
+        
+      }
       </script>
  
     </body>
