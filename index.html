@@ -6,29 +6,30 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="localForage/dist/localforage.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+    <script src="jspdf.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
     <head>
       <meta charset="utf8" />
-      <title>LocalForage Example Pen</title>
+      <title>jsPDF Test</title>
     </head>
     <body>
       <h1>PDF Generator</h1>
       <div class="form-group">
-        <input type="button" value="Generate PDF" onclick="makePDF"/>
+        <input type="button" value="Generate PDF" onclick="makePDF()"/>
       </div>
 
       <h1>LocalForage Example Pen</h1>
       <ul id="htmlConsole" class="logList"></ul>
 
       <div class="form-group">
-        <textarea class="form-control" id="testArea" rows="3">42</textarea>
-        <input type="button" value="Save Contents" onclick="console.log($('testArea')"> <!--//saveContents($('testArea'))"/-->
+        <textarea class="form-control" id="textarea" rows="3">42</textarea>
+        <input type="button" value="Save Contents" onclick="console.log($('#textarea'))"> <!--//saveContents($('testArea'))"/-->
         <input type="button" value="Load Contents" onclick=""/>
       </div>
 
       <script>
-      
+      /*
       localforage.setItem('key', 300).then(function () {
         return localforage.getItem('key');
       }).then(function (value) {
@@ -40,17 +41,48 @@
         // we got an error
         console.log('Error')
       });
-
+      */
       function makePDF() {
         var doc = new jsPDF({
           orientation: 'portrait',
-          unit: 'in',
-          format: [4,2]
+          unit: 'mm',
+          format: 'letter',
+          putOnlyUsedFonts: true,
         })
 
-        doc.text($('testArea').value,1,1);
-        doc.save('two-by-four.pdf');
+        var pageH = doc.internal.pageSize.height;
+        var pageW = doc.internal.pageSize.width;
         
+        // Make a title page Correction factor per font size 60=14 40=10, 20=6, 10=3
+        var y = 27;
+        doc.setFontSize("30");
+        doc.text("Evidence of Injury Report", pageW/2, y, {align: 'center'});
+        doc.setFontSize("16");
+        y = y + 16;
+        doc.text("Name of Decedent: ", 17,y);
+        y = y + 10;
+        doc.text("Age of Decedent: ", 17,y)
+        y = y + 10;
+        doc.text("Time of Death: ", 17,y)
+        y = y + 10;
+        doc.text("Time of Autopsy: ", 17,y)
+        
+        doc.addPage();
+        y = 17;
+        console.log($('#textarea').val());
+        var splitTitle = doc.splitTextToSize($('#textarea').val(), 270);
+        console.log("Page height is listed as " + pageH);
+        doc.setFontType("normal");
+        doc.setFontSize("11");
+        for (var i = 0; i < splitTitle.length; i++) {                
+          if (y > 260) {
+              y = 17;
+              doc.addPage();
+          }
+          doc.text(15, y, splitTitle[i]);
+          y = y + 7;
+        }
+        doc.save('my.pdf');
       }
       </script>
  
